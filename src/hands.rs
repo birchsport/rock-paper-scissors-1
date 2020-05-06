@@ -28,28 +28,28 @@ lazy_static! {
 }
 
 pub trait Beats {
-    fn beats(&self) -> (&Self, &Self);
+    fn beats(&self) -> Vec<&Self>;
 }
 
 impl Beats for Hand {
-    fn beats(&self) -> (&Self, &Self) {
+    fn beats(&self) -> Vec<&Self> {
         // match is exhaustive, so every enum variant must be covered
         match *self {
-            Rock => (&Lizard, &Scissors),
-            Paper => (&Spock, &Rock),
-            Scissors => (&Paper, &Lizard),
-            Lizard => (&Spock, &Paper),
-            Spock => (&Rock, &Scissors)
+            Rock => vec![&Lizard, &Scissors],
+            Paper => vec![&Spock, &Rock],
+            Scissors => vec![&Paper, &Lizard],
+            Lizard => vec![&Spock, &Paper],
+            Spock => vec![&Rock, &Scissors]
         }
     }
 }
 
 pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
-    let (own_beats, other_beats) = (own_hand.beats(), other_hand.beats());
+    let (own_beats, other_beats) = (&own_hand.beats(), &other_hand.beats());
 
     match (own_beats, other_beats) {
-        _ if own_beats.0 == &other_hand || own_beats.1 == &other_hand  => Win,
-        _ if other_beats.0 == &own_hand || other_beats.1 == &own_hand => Lose,
+        _ if own_beats.contains(&&other_hand) => Win,
+        _ if other_beats.contains(&&own_hand) => Lose,
         _ => Draw,
     }
 }
