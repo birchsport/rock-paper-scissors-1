@@ -1,6 +1,6 @@
 use hands::{Hand, HandResult, HANDS, HANDS_NAMES, play_hand, random_hand};
 
-use rand::{NewRng, StdRng};
+use rand::prelude::*;
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
@@ -44,14 +44,14 @@ lazy_static! {
 }
 
 pub struct Game {
-    rng: StdRng,
+    rng : ThreadRng,
     score: isize,
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
-            rng: StdRng::new(),
+            rng:  thread_rng(),
             score: 0,
         }
     }

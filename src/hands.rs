@@ -1,11 +1,10 @@
 extern crate rand;
 
-use rand::{Rng, StdRng};
+use rand::prelude::*;
 use strum::IntoEnumIterator;
 
 use self::Hand::*;
 use self::HandResult::*;
-
 
 #[derive(ToString, Eq, Debug, PartialEq)]
 pub enum HandResult {
@@ -19,26 +18,28 @@ pub enum Hand {
     Rock,
     Paper,
     Scissors,
+    Lizard,
+    Spock,
 }
 
 lazy_static! {
     pub static ref HANDS: Vec<Hand> = Hand::iter().collect();
-    pub static ref HANDS_NAMES: Vec<String> = Hand::iter()
-                                              .map(|hand| hand.to_string())
-                                              .collect();
+    pub static ref HANDS_NAMES: Vec<String> = Hand::iter().map(|hand| hand.to_string()).collect();
 }
 
 pub trait Beats {
-    fn beats(&self) -> Self;
+    fn beats(&self) -> (&Self, &Self);
 }
 
 impl Beats for Hand {
-    fn beats(&self) -> Self {
+    fn beats(&self) -> (&Self, &Self) {
         // match is exhaustive, so every enum variant must be covered
         match *self {
-            Rock => Scissors,
-            Paper => Rock,
-            Scissors => Paper,
+            Rock => (&Lizard, &Scissors),
+            Paper => (&Spock, &Rock),
+            Scissors => (&Paper, &Lizard),
+            Lizard => (&Spock, &Paper),
+            Spock => (&Rock, &Scissors)
         }
     }
 }
@@ -47,28 +48,29 @@ pub fn play_hand(own_hand: Hand, other_hand: Hand) -> HandResult {
     let (own_beats, other_beats) = (own_hand.beats(), other_hand.beats());
 
     match (own_beats, other_beats) {
-        _ if own_beats == other_hand => Win,
-        _ if other_beats == own_hand => Lose,
-        _                            => Draw,
+        _ if own_beats.0 == &other_hand || own_beats.1 == &other_hand  => Win,
+        _ if other_beats.0 == &own_hand || other_beats.1 == &own_hand => Lose,
+        _ => Draw,
     }
 }
 
-pub fn random_hand(rng: &mut StdRng) -> Hand {
-    *rng.choose(&HANDS).unwrap()
+pub fn random_hand(rng: &mut ThreadRng) -> Hand {
+    return *HANDS.choose(rng).unwrap();
 }
-
 
 #[cfg(test)]
 mod tests {
-    use super::{HANDS, HANDS_NAMES, play_hand};
-    use super::{HandResult::*, Hand::*};
+    use super::{play_hand, HANDS, HANDS_NAMES};
+    use super::{Hand::*, HandResult::*};
     use std::collections::HashSet;
 
     #[test]
     fn test_unique_names() {
         assert_eq!(HANDS_NAMES.len(), HANDS.len());
-        assert_eq!(HANDS_NAMES.iter().collect::<HashSet<_>>().len(),
-                   HANDS.len());
+        assert_eq!(
+            HANDS_NAMES.iter().collect::<HashSet<_>>().len(),
+            HANDS.len()
+        );
     }
 
     #[test]
