@@ -78,13 +78,31 @@ mod tests {
         assert_eq!(play_hand(Rock, Scissors), Win);
         assert_eq!(play_hand(Rock, Paper), Lose);
         assert_eq!(play_hand(Rock, Rock), Draw);
+        assert_eq!(play_hand(Rock, Lizard), Win);
+        assert_eq!(play_hand(Rock, Spock), Lose);
 
         assert_eq!(play_hand(Paper, Rock), Win);
         assert_eq!(play_hand(Paper, Scissors), Lose);
         assert_eq!(play_hand(Paper, Paper), Draw);
+        assert_eq!(play_hand(Paper, Lizard), Lose);
+        assert_eq!(play_hand(Paper, Spock), Win);
 
         assert_eq!(play_hand(Scissors, Paper), Win);
         assert_eq!(play_hand(Scissors, Rock), Lose);
         assert_eq!(play_hand(Scissors, Scissors), Draw);
+        assert_eq!(play_hand(Scissors, Lizard), Win);
+        assert_eq!(play_hand(Scissors, Spock), Lose);
+
+        assert_eq!(play_hand(Spock, Paper), Lose);
+        assert_eq!(play_hand(Spock, Rock), Win);
+        assert_eq!(play_hand(Spock, Lizard), Lose);
+        assert_eq!(play_hand(Spock, Spock), Draw);
+        assert_eq!(play_hand(Spock, Scissors), Win);
+
+        assert_eq!(play_hand(Lizard, Paper), Win);
+        assert_eq!(play_hand(Lizard, Spock), Win);
+        assert_eq!(play_hand(Lizard, Rock), Lose);
+        assert_eq!(play_hand(Lizard, Scissors), Lose);
+        assert_eq!(play_hand(Lizard, Lizard), Draw);
     }
 }
